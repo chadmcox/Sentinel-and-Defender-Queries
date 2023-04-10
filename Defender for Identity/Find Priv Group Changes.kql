@@ -1,0 +1,14 @@
+let groups = pack_array("Account Operators","Administrators","Backup Operators","Domain Admins","Domain Controllers","Enterprise Admins","Print Operators","Read-only Domain Controllers","Replicator","Schema Admins","Server Operators","Cert Publishers","Certificate Service DCOM Access","Cryptographic Operators","Distributed COM Users","DnsAdmins","Enterprise Key Admins","Key Admins");
+IdentityDirectoryEvents
+| where Timestamp >= now(-15d)
+| where ActionType == "Group Membership changed"
+| extend AdditionalFields = parse_json(AdditionalFields)
+| extend FromGroup = AdditionalFields.["FROM.GROUP"]
+| extend ToGroup = AdditionalFields.["TO.GROUP"]
+| where ToGroup in (groups) or FromGroup in (groups)
+// Extract target user or device name
+| extend TargetObject =  iff( isnull(AdditionalFields.["TARGET_OBJECT.USER"]), AdditionalFields.["TARGET_OBJECT.GROUP"], AdditionalFields.["TARGET_OBJECT.USER"])
+// Special case group managed service accounts and devices
+| extend TargetObject =  iff( isnull(TargetObject), AdditionalFields.["TARGET_OBJECT.DEVICE"], TargetObject)
+| project-away AdditionalFields
+| project-reorder Timestamp, ActionType,Application, FromGroup, ToGroup, TargetObject
