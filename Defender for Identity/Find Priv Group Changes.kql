@@ -1,3 +1,5 @@
+//https://cloudbrothers.info/en/alert-sensitive-ad-groups-mdi/
+//great article around this.
 let groups = pack_array("Account Operators","Administrators","Backup Operators","Domain Admins","Domain Controllers","Enterprise Admins","Print Operators","Read-only Domain Controllers","Replicator","Schema Admins","Server Operators","Cert Publishers","Certificate Service DCOM Access","Cryptographic Operators","Distributed COM Users","DnsAdmins","Enterprise Key Admins","Key Admins");
 IdentityDirectoryEvents
 | where Timestamp >= now(-15d)
