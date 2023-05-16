@@ -1,0 +1,6 @@
+let signedin = AADNonInteractiveUserSignInLogs | union SigninLogs | where TimeGenerated > ago(90d) and ResultType == 0 | distinct UserPrincipalName;
+IdentityInfo 
+| where TimeGenerated > ago(14d)
+| extend Status = tostring(iff(AccountUPN in (signedin), 'Active','Inactive'))
+| distinct  AccountUPN, Status, UserType
+| summarize userCount = count() by Status, UserType
