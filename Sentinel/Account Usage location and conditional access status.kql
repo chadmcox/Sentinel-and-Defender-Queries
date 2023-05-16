@@ -1,0 +1,6 @@
+SigninLogs
+| where TimeGenerated > ago(14d)
+| where AppDisplayName  <> "Windows Sign In" and AppDisplayName <> "Microsoft Authentication Broker"
+| extend TrustedLocation = tostring(iff(NetworkLocationDetails contains 'trustedNamedLocation', 'trustedNamedLocation','')) 
+| extend networkName = tostring(parse_json(parse_json(NetworkLocationDetails)[0].networkNames)[0])
+| distinct UserPrincipalName, TrustedLocation, Location, ConditionalAccessStatus, networkName
