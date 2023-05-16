@@ -1,6 +1,7 @@
 //currently set to query 7 days
 SigninLogs
 | where TimeGenerated > ago(7d) and ResultType == 0
+| where AADTenantId == ResourceTenantId
 | extend TrustedLocation = tostring(iff(NetworkLocationDetails contains 'trustedNamedLocation', 'trustedNamedLocation','NotTrusted'))
 | extend networkName = tostring(parse_json(parse_json(NetworkLocationDetails)[0].networkNames)[0])
 | extend trustType = tostring(DeviceDetail.trustType)
