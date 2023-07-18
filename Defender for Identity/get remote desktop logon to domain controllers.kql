@@ -1,0 +1,6 @@
+let domaincontrollers = IdentityDirectoryEvents | distinct DestinationDeviceName;
+IdentityLogonEvents 
+| where LogonType == 'Remote desktop'
+| where ActionType == "LogonSuccess"
+| where TargetDeviceName in (domaincontrollers)
+| project AccountName, AccountDisplayName, AccountDomain, DeviceName, TargetDeviceName, ActionType, FailureReason
