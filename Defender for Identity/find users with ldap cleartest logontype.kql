@@ -1,0 +1,4 @@
+IdentityLogonEvents 
+| where Protocol !in ('NTLM','Kerberos')
+| where LogonType == 'LDAP cleartext'
+| distinct AccountDisplayName, DeviceName, AccountDomain, LogonType
