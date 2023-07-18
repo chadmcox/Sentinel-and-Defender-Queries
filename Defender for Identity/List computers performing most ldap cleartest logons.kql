@@ -1,0 +1,7 @@
+IdentityLogonEvents 
+| where Protocol !in ('NTLM','Kerberos')
+| where LogonType == 'LDAP cleartext'
+//change project to distinct to get a list of unique entries
+| project AccountDisplayName, DeviceName, AccountDomain, LogonType
+| summarize machinetotal = count() by DeviceName
+| sort by machinetotal desc 
