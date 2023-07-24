@@ -1,0 +1,6 @@
+IdentityLogonEvents 
+| where ActionType == "LogonFailed"
+| project AccountName, AccountDisplayName, AccountDomain, DeviceName, TargetDeviceName, ActionType, FailureReason
+| where AccountName !has "$"
+| summarize userfailedattempts = count() by AccountName, AccountDisplayName, AccountDomain, DeviceName, TargetDeviceName, ActionType, FailureReason
+| sort by userfailedattempts desc 
