@@ -1,0 +1,6 @@
+let list = IdentityInfo
+| where Tags contains "Sensitive"
+| distinct OnPremSid;
+IdentityLogonEvents 
+| where AccountSid in (list)
+| project AccountDomain, AccountName, DestinationDeviceName
