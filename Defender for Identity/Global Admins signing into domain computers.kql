@@ -1,0 +1,8 @@
+let list = IdentityInfo
+| where AssignedRoles contains "Global Administrator"
+| where OnPremSid contains "S-1-5-21"
+| distinct OnPremSid;
+IdentityLogonEvents 
+| where AccountSid in (list)
+| project Timestamp, ActionType, AccountUpn, LogonType, DeviceName, TargetDeviceName
+| sort by Timestamp
