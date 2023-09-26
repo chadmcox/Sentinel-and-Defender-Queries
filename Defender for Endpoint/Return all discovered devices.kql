@@ -1,0 +1,4 @@
+DeviceInfo
+| summarize arg_max(Timestamp, *) by DeviceId // Get latest known good per device ID
+| where isempty(MergedToDeviceId) // Remove invalidated/merged devices
+| where OnboardingStatus != "Onboarded"
