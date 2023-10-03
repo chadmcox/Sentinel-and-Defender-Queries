@@ -4,6 +4,7 @@ let privusers = IdentityInfo | where Timestamp > ago(60d) and AssignedRoles != "
 AADSignInEventsBeta 
 | where LogonType !contains "nonInteractiveUser"
 | where Timestamp > ago(14d)
+| where ErrorCode == 0
 | where AccountObjectId in (privusers) 
 | where RiskLevelAggregated in (10,50,100)
 | project AccountUpn, AccountDisplayName, ConditionalAccessStatus, AuthenticationRequirement, RiskLevelAggregated, RiskLevelDuringSignIn
