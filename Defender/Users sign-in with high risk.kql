@@ -1,0 +1,5 @@
+AADSignInEventsBeta 
+| where LogonType !contains "nonInteractiveUser"
+| where Timestamp > ago(14d) 
+| where ErrorCode == 0 and Application <> 'Microsoft Authentication Broker'
+| where RiskLevelDuringSignIn in (100)
