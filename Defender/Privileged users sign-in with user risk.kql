@@ -1,1 +1,8 @@
-
+let privroles = pack_array("Application Administrator","Authentication Administrator","Cloud Application Administrator","Conditional Access Administrator","Exchange Administrator","Global Administrator","Helpdesk Administrator","Hybrid Identity Administrator","Password Administrator","Privileged Authentication Administrator","Privileged Role Administrator","Security Administrator","SharePoint Administrator","User Administrator");
+let privusers = IdentityInfo | where Timestamp > ago(60d) and AssignedRoles != "[]" | mv-expand AssignedRoles | extend Roles = tostring(AssignedRoles) | where Roles in (privroles) | distinct AccountObjectId;
+AADSignInEventsBeta 
+| where LogonType !contains "nonInteractiveUser"
+| where Timestamp > ago(14d)
+| where AccountObjectId in (privusers) 
+| where RiskLevelAggregated in (10,50,100)
+| project AccountUpn, AccountDisplayName, ConditionalAccessStatus, AuthenticationRequirement, RiskLevelAggregated, RiskLevelDuringSignIn
