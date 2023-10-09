@@ -1,0 +1,3 @@
+DeviceEvents
+| where ActionType == "PowerShellCommand"
+| where DeviceName in~ ("server")
