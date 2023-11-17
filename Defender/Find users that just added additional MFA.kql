@@ -1,0 +1,11 @@
+CloudAppEvents
+| where RawEventData has "StrongAuthenticationMethod" or RawEventData has "StrongAuthenticationPhoneAppDetail" or RawEventData has "StrongAuthenticationUserDetails"
+| extend something = tostring(parse_json(RawEventData).ModifiedProperties)
+| mv-expand todynamic(something)
+| extend After = tostring(parse_json(something).NewValue)
+| extend Before = tostring(parse_json(something).OldValue)
+| extend MFAafterCount = array_length(todynamic(After))
+| extend MFAbeforeCount = array_length(todynamic(Before))
+| where MFAbeforeCount < MFAafterCount and MFAbeforeCount <> 0
+| extend targetUPN = tostring(parse_json(RawEventData).ObjectId)
+| distinct AccountDisplayName,targetUPN, MFAbeforeCount, MFAafterCount, After, Before
