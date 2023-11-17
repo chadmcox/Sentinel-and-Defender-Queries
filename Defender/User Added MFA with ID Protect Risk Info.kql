@@ -1,0 +1,18 @@
+let signinrisk = AADSignInEventsBeta | where LogonType !contains "nonInteractiveUser" | where Timestamp > ago(1d) | where ErrorCode == 0 and Application <> 'Microsoft Authentication Broker'
+| where RiskLevelDuringSignIn > 1 | distinct AccountUpn;
+let userrisk = AADSignInEventsBeta | where LogonType !contains "nonInteractiveUser" | where Timestamp > ago(1d) | where ErrorCode == 0 and Application <> 'Microsoft Authentication Broker'
+| where RiskLevelAggregated in (10,50,100)| distinct AccountUpn;
+CloudAppEvents
+| where Timestamp > ago(1d)
+| where RawEventData has "StrongAuthenticationMethod" or RawEventData has "StrongAuthenticationPhoneAppDetail" or RawEventData has "StrongAuthenticationUserDetails"
+| extend something = tostring(parse_json(RawEventData).ModifiedProperties)
+| mv-expand todynamic(something)
+| extend After = tostring(parse_json(something).NewValue)
+| extend Before = tostring(parse_json(something).OldValue)
+| extend MFAafterCount = array_length(todynamic(After))
+| extend MFAbeforeCount = array_length(todynamic(Before))
+| where MFAbeforeCount < MFAafterCount and MFAbeforeCount <> 0
+| extend targetUPN = tostring(parse_json(RawEventData).ObjectId)
+| extend signinrisk = iif((targetUPN in (signinrisk)), "true", "false")
+| extend userrisk = iif((targetUPN in (userrisk)), "true", "false")
+| distinct AccountDisplayName,targetUPN, MFAbeforeCount, MFAafterCount, signinrisk, userrisk
