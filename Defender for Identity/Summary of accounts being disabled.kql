@@ -1,0 +1,7 @@
+IdentityLogonEvents 
+| where ActionType == "LogonFailed"
+| where Application == "Active Directory"
+| where FailureReason == "AccountDisabled"
+| where AccountName !has "$"
+| summarize userfailedattempts = count() by AccountName, AccountDisplayName, AccountDomain, DeviceName, TargetDeviceName, ActionType, FailureReason
+| sort by userfailedattempts desc 
