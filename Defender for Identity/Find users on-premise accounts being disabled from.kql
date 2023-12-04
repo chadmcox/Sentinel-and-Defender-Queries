@@ -1,0 +1,11 @@
+//replace "changeme" with the users accountname.  The results will show the machine where the 
+//disabled might be coming from.
+let user = "changeme";
+IdentityLogonEvents 
+| where ActionType == "LogonFailed"
+| where Application == "Active Directory"
+| where FailureReason == "AccountDisabled"
+| where AccountName has (user)
+| where AccountName !has "$"
+| extend TargetOS = tostring(parse_json(AdditionalFields.TargetComputerOperatingSystem))
+| project AccountDisplayName,AccountName, AccountDomain, AccountUpn, ActionType, FailureReason,TargetDeviceName,TargetOS, DeviceName
