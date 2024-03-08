@@ -1,0 +1,16 @@
+let perms =  pack_array("Sites.FullControl.All","Sites.Manage.All","Sites.Read.All","Sites.ReadWrite.All","Files.Read.All","Files.ReadWrite.All","File.Read.All");
+let operations = pack_array('add app role assignment to service principal.','remove app role assignment to service principal.');
+CloudAppEvents
+| where Timestamp > ago (14d)
+| where tolower(ActionType) in (operations)
+| extend something = tostring(parse_json(RawEventData).ModifiedProperties)
+| mv-expand todynamic(something)
+| where something contains "AppRole.Value"
+| extend scope = tostring(parse_json(something).NewValue)
+| project-away something
+| where scope in (perms)
+| extend something = tostring(parse_json(RawEventData).ModifiedProperties)
+| mv-expand todynamic(something)
+| where something contains "ServicePrincipal.DisplayName"
+| extend ServicePrincipalDisplayName = tostring(parse_json(something).NewValue)
+| project Timestamp, AccountDisplayName, ActionType, scope, ServicePrincipalDisplayName
