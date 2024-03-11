@@ -1,0 +1,18 @@
+let perms =  pack_array(""Application.ReadWrite.All","GroupMember.ReadWrite.All","Group.ReadWrite.All","AppRoleAssignment.ReadWrite.All","RoleManagement.ReadWrite.Directory");
+let operations = pack_array('add app role assignment to service principal.','remove app role assignment to service principal.');
+CloudAppEvents
+| where Timestamp > ago (14d)
+| where tolower(ActionType) in (operations)
+| extend ModifiedProperties = tostring(parse_json(RawEventData).ModifiedProperties)
+| mv-apply Property = todynamic(ModifiedProperties) on 
+    (
+        where Property contains "AppRole.Value"
+        | extend scope = tostring(parse_json(Property).NewValue)
+    )
+| mv-apply Property = todynamic(ModifiedProperties) on 
+    (
+        where Property contains "ServicePrincipal.DisplayName"
+        | extend ServicePrincipalDisplayName = tostring(parse_json(Property).NewValue)
+    )
+| where scope in (perms)
+| project Timestamp, AccountDisplayName, ActionType, scope, ServicePrincipalDisplayName
