@@ -3,14 +3,16 @@ let operations = pack_array('add app role assignment to service principal.','rem
 CloudAppEvents
 | where Timestamp > ago (14d)
 | where tolower(ActionType) in (operations)
-| extend something = tostring(parse_json(RawEventData).ModifiedProperties)
-| mv-expand todynamic(something)
-| where something contains "AppRole.Value"
-| extend scope = tostring(parse_json(something).NewValue)
-| project-away something
+| extend ModifiedProperties = tostring(parse_json(RawEventData).ModifiedProperties)
+| mv-apply Property = todynamic(ModifiedProperties) on 
+    (
+        where Property contains "AppRole.Value"
+        | extend scope = tostring(parse_json(Property).NewValue)
+    )
+| mv-apply Property = todynamic(ModifiedProperties) on 
+    (
+        where Property contains "ServicePrincipal.DisplayName"
+        | extend ServicePrincipalDisplayName = tostring(parse_json(Property).NewValue)
+    )
 | where scope in (perms)
-| extend something = tostring(parse_json(RawEventData).ModifiedProperties)
-| mv-expand todynamic(something)
-| where something contains "ServicePrincipal.DisplayName"
-| extend ServicePrincipalDisplayName = tostring(parse_json(something).NewValue)
 | project Timestamp, AccountDisplayName, ActionType, scope, ServicePrincipalDisplayName
