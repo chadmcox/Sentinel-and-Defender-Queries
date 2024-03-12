@@ -1,0 +1,10 @@
+100 = unfamiliarFeatures
+301 = unlikelyTravel
+401 = mcasImpossibleTravel
+101 = anonymizedIPAddress
+210 = anomalousToken
+208 = Unknown
+105 = Unknown
+205 = Unknown
+209 = Unkown
+402 = Unknown
