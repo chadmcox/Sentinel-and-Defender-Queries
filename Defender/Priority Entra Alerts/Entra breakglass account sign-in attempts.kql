@@ -1,0 +1,3 @@
+// https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Breakglass%20account%20logged%20in.kql
+// this query list anyh sign-in attempts by the breakglass accounts
+//  designed to work in defender xdr threat hunting
