@@ -1,0 +1,3 @@
+//This query work in defender xdr threat hunting
+// https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Apps%20assigned%20with%20full_access_as_app.kql
+// looks to see if full_access_as_app was assigned to a service principal
