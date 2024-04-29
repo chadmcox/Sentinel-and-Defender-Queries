@@ -1,0 +1,4 @@
+// https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Conditional%20access%20policy%20was%20created.kql
+// https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Conditional%20access%20policy%20was%20updated.kql
+// this query shows activity related to conditional access policies
+// works in defender xdr threat protections
