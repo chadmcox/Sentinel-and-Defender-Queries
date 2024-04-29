@@ -1,0 +1,3 @@
+//updated this query for defender xdr
+// the goal is to see in defender threat hunting if the sync account is doing things it should not be doing like creating service principals.
+//https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/AADConnect%20account%20doing%20unusual%20things.kql
