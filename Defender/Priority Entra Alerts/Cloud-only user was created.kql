@@ -1,0 +1,3 @@
+// https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Cloud-only%20user%20was%20created.kql
+// this query finds accounts created outside the expected process
+// query works in Defender xdr threat hunting
