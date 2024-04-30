@@ -1,3 +1,12 @@
 // https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Cloud-only%20user%20was%20created.kql
 // this query finds accounts created outside the expected process
 // query works in Defender xdr threat hunting
+CloudAppEvents
+| where ActionType == "Add user."
+| where AccountDisplayName <> "On-Premises Directory Synchronization Service Account"
+| where AccountDisplayName <> "Microsoft B2B Admin Worker"
+| where AccountDisplayName <> "Microsoft Substrate Management"
+| where RawEventData !has "Guest"
+| extend User = tostring(parse_json(RawEventData).ObjectId)
+| extend ResultStatus = tostring(parse_json(RawEventData).ResultStatus)
+| distinct Timestamp,AccountDisplayName, AccountId, AccountType, User,ResultStatus
