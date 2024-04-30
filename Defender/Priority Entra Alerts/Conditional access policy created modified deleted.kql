@@ -2,3 +2,12 @@
 // https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Conditional%20access%20policy%20was%20updated.kql
 // this query shows activity related to conditional access policies
 // works in defender xdr threat protections
+//this is including named locations
+CloudAppEvents
+| where ActionType  in ("Update policy.","Delete policy.","Add policy.")
+| where RawEventData has "AzureActiveDirectory" and RawEventData !has "ClaimIssuancePolicy"
+| where ActivityObjects !has "Default User Credential Policy"
+| extend ModifiedProperties = tostring(parse_json(RawEventData).ModifiedProperties)
+| extend NewConditionaAccessPolicyDisplayName = tostring(parse_json(parse_json(ModifiedProperties)[0].NewValue))
+| where ObjectName !has "Default Policy"
+| project Timestamp, AccountDisplayName, AccountType, ActionType, ObjectName, NewConditionaAccessPolicyDisplayName
