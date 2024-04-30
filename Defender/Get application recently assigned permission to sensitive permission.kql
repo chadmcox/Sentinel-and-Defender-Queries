@@ -1,4 +1,4 @@
-let perms =  pack_array(""Application.ReadWrite.All","GroupMember.ReadWrite.All","Group.ReadWrite.All","AppRoleAssignment.ReadWrite.All","RoleManagement.ReadWrite.Directory");
+let perms =  pack_array("Application.ReadWrite.All","GroupMember.ReadWrite.All","Group.ReadWrite.All","AppRoleAssignment.ReadWrite.All","RoleManagement.ReadWrite.Directory");
 let operations = pack_array('add app role assignment to service principal.','remove app role assignment to service principal.');
 CloudAppEvents
 | where Timestamp > ago (14d)
