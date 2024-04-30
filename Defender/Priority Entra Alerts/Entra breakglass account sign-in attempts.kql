@@ -1,3 +1,15 @@
 // https://github.com/chadmcox/Azure_Active_Directory/blob/master/Log%20Analytics/Priority%20Alerts%20for%20Azure%20AD%20KQL/Breakglass%20account%20logged%20in.kql
 // this query list anyh sign-in attempts by the breakglass accounts
 //  designed to work in defender xdr threat hunting
+let privroles = pack_array("Global Administrator");
+let privusers = IdentityInfo 
+| where Timestamp > ago(14d) and AssignedRoles != "[]" and SourceProvider == "AzureActiveDirectory"
+| mv-expand AssignedRoles 
+| extend Roles = tostring(AssignedRoles) 
+| where Roles in (privroles) 
+| distinct AccountObjectId;
+AADSignInEventsBeta 
+| where Timestamp > ago(10d)
+| where AccountObjectId in (privusers) 
+| extend TrustedLocation = tostring(iff(NetworkLocationDetails contains 'trustedNamedLocation', 'Trusted',''))
+| project  AccountDisplayName, AccountUpn, EndpointCall, Application, TrustedLocation, ErrorCode
