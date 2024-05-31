@@ -1,1 +1,12 @@
-
+let userUPNs = CloudAppEvents 
+| where Timestamp > ago(72h) 
+| where ActionType in ("Add registered owner to device.","Add registered users to device.")
+| extend userId = tostring(parse_json(RawEventData).ObjectId)
+| distinct userId = tolower(userId);
+AADSignInEventsBeta
+| where Timestamp > ago(24h) 
+| where RiskLevelDuringSignIn > 1 or RiskLevelAggregated > 1
+| where IsCompliant == 0
+| extend AccountUpn = tolower(AccountUpn)
+| where AccountUpn in (userUPNs)
+| distinct  Application, LogonType, AccountDisplayName, AccountUpn, IPAddress, Country, State, City, ErrorCode, RiskLevelDuringSignIn, RiskLevelAggregated, RiskEventTypes
