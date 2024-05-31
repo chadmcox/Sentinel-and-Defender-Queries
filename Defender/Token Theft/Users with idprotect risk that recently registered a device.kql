@@ -1,5 +1,5 @@
 let userUPNs = CloudAppEvents 
-| where Timestamp > ago(72h) 
+| where Timestamp > ago(24h) 
 | where ActionType in ("Add registered owner to device.","Add registered users to device.")
 | extend userId = tostring(parse_json(RawEventData).ObjectId)
 | distinct userId = tolower(userId);
