@@ -1,0 +1,11 @@
+let updatedStrongAuthUPNs = CloudAppEvents 
+| where Timestamp > ago(24h) 
+| where RawEventData has "StrongAuthenticationMethod" or RawEventData has "StrongAuthenticationPhoneAppDetail" or RawEventData has "StrongAuthenticationUserDetails"
+| extend targetUPN = tostring(parse_json(RawEventData).ObjectId)
+| project targetUPN;
+AADSignInEventsBeta
+| where Timestamp > ago(24h) 
+| where RiskLevelDuringSignIn > 1 or RiskLevelAggregated > 1
+| where IsCompliant == 0
+| where AccountUpn in (updatedStrongAuthUPNs)
+| distinct  Application, LogonType, AccountDisplayName, AccountUpn, IPAddress, Country, State, City, ErrorCode, RiskLevelDuringSignIn, RiskLevelAggregated, RiskEventTypes
