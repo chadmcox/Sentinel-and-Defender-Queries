@@ -1,0 +1,11 @@
+let userUPNs = UrlClickEvents
+| where Timestamp > ago(24h) 
+| where Workload == 'Email'
+| distinct AccountUpn;
+AADSignInEventsBeta
+| where Timestamp > ago(24h) 
+| where RiskLevelDuringSignIn > 1 or RiskLevelAggregated > 1
+| where IsCompliant == 0
+| extend AccountUpn = tolower(AccountUpn)
+| where AccountUpn in (userUPNs)
+| distinct  Application, LogonType, AccountDisplayName, AccountUpn, IPAddress, Country, State, City, ErrorCode, RiskLevelDuringSignIn, RiskLevelAggregated, RiskEventTypes
