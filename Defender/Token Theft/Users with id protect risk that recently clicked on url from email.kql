@@ -1,6 +1,5 @@
 let userUPNs = UrlClickEvents
-| where Timestamp > ago(24h) 
-| where Workload == 'Email'
+| where Timestamp > ago(24h)
 | distinct AccountUpn;
 AADSignInEventsBeta
 | where Timestamp > ago(24h) 
