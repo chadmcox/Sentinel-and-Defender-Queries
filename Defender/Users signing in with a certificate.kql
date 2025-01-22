@@ -1,0 +1,3 @@
+IdentityLogonEvents
+| where Timestamp > ago(7d)
+| where LogonType == "Interactive logon with certificate"
