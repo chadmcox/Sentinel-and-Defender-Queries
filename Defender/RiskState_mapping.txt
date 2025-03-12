@@ -1,5 +1,5 @@
 null
 2 = atRisk
 3 = confirmedSafe
-5
-6 = dismissed??
+5 = remediated
+6 = dismissed
