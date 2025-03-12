@@ -12,3 +12,8 @@ RiskLevelAggregated
 1 = None
 
 RiskLevelDuringSignIn
+null
+500 = hidden
+100 = High
+50 = Medium
+10 = Low
