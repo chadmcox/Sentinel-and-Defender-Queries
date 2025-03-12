@@ -1,5 +1,14 @@
+RiskState
 null
 2 = atRisk
 3 = confirmedSafe
 5 = remediated
 6 = dismissed
+
+RiskLevelAggregated
+100 = High
+50 = Medium
+10 = Low
+1 = None
+
+RiskLevelDuringSignIn
