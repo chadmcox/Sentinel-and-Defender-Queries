@@ -2,5 +2,5 @@ AADSignInEventsBeta
 | where LogonType !contains "nonInteractiveUser"
 | where Timestamp > ago(14d) 
 | where ErrorCode == 0 and Application <> 'Microsoft Authentication Broker'
-| where RiskLevelDuringSignIn in (50,100) and  and RiskState == 2
+| where RiskLevelDuringSignIn in (50,100) and RiskState == 2
 | project AccountUpn, AccountDisplayName, ConditionalAccessStatus, AuthenticationRequirement, RiskLevelAggregated, RiskLevelDuringSignIn
