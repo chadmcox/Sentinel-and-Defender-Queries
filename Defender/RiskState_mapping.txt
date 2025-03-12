@@ -6,6 +6,7 @@ null
 6 = dismissed
 
 RiskLevelAggregated
+null
 100 = High
 50 = Medium
 10 = Low
