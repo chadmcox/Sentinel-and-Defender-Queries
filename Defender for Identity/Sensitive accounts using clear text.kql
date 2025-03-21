@@ -1,0 +1,8 @@
+let list = IdentityInfo
+| where Tags contains "Sensitive"
+| distinct OnPremSid;
+IdentityLogonEvents 
+| where Protocol !in ('NTLM','Kerberos')
+| where LogonType == 'LDAP cleartext'
+| where AccountSid in (list)
+| distinct AccountDisplayName, DeviceName, AccountDomain, LogonType
