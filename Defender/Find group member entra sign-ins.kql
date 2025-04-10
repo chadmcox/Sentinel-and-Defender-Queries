@@ -1,0 +1,10 @@
+//this is great to see how service accounts or other exclusion groups are being used.
+let serviceaccounts = search in (ExposureGraphEdges) "exclusion_group" | distinct SourceNodeName = tolower(SourceNodeName);
+let upns = IdentityLogonEvents
+| extend AccountName = tolower(AccountName)
+| where AccountName in (serviceaccounts) | distinct AccountUpn;
+AADSignInEventsBeta
+| where AccountUpn in (upns)
+| extend NetworkLocation = tostring(parse_json(NetworkLocationDetails)[0].networkNames[0]) 
+| extend TrustedLocation = tostring(iff(NetworkLocationDetails contains 'trustedNamedLocation', 'trustedNamedLocation',''))
+| project  AccountUpn, AccountDisplayName, NetworkLocation, IPAddress, TrustedLocation | sort by AccountUpn
