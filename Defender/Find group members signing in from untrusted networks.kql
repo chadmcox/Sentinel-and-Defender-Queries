@@ -1,0 +1,12 @@
+//update change_me_to_group_name to the name of the group you want to look for sign-ins
+let serviceaccounts = search in (ExposureGraphEdges) "change_me_to_group_name" | distinct SourceNodeName = tolower(SourceNodeName);
+let upns = IdentityLogonEvents
+| extend AccountName = tolower(AccountName)
+| where AccountName in (serviceaccounts) | distinct AccountUpn;
+AADSignInEventsBeta
+| where AccountUpn in (upns)
+| extend NetworkLocation = tostring(parse_json(NetworkLocationDetails)[0].networkNames[0])
+| extend TrustedLocation = tostring(iff(NetworkLocationDetails contains 'trustedNamedLocation', 'trustedNamedLocation',''))
+| where NetworkLocationDetails !contains "trustedNamedLocation"
+| distinct AccountUpn, AccountDisplayName, NetworkLocation, IPAddress, TrustedLocation
+| summarize iplist = make_set(IPAddress) by AccountDisplayName, AccountUpn
