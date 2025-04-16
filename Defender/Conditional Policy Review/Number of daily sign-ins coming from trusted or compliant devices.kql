@@ -1,0 +1,15 @@
+AADSignInEventsBeta 
+| where Timestamp >= ago(30d) and ErrorCode == 0
+| extend Day = startofday(Timestamp)
+| summarize
+    ['Total Signin Count']=count(),
+    ['Hybrid Azure AD joined']=countif(DeviceTrustType == "Hybrid Azure AD joined"),
+    ['Compliant']=countif(IsCompliant == 1) by Day
+| project Day,HAADJPercentage=(todouble(['Hybrid Azure AD joined']) * 100 / todouble(['Total Signin Count'])),
+CompliantPercentage=(todouble(['Compliant']) * 100 / todouble(['Total Signin Count']))
+| render columnchart
+    with (
+    kind=unstacked,
+    xtitle="Day",
+    ytitle="Signin Count",
+    title="HAADJ vs Compliant signins per day")
