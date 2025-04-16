@@ -1,0 +1,13 @@
+AADSignInEventsBeta 
+| where Timestamp > ago(15d) //and RiskState == 2
+| where RiskLevelDuringSignIn in (50,100) or RiskLevelAggregated in (10,50,100)
+ |extend CA = parse_json(ConditionalAccessPolicies)
+ | extend CA = parse_json(ConditionalAccessPolicies)
+| mv-expand bagexpansion=array CA
+| evaluate bag_unpack(CA)
+| extend
+    ['CA Outcome']=tostring(column_ifexists('result', "")),
+    ['CA Policy Name'] = column_ifexists('displayName', "")
+| where ['CA Policy Name'] contains "risk"
+| distinct AccountUpn,['CA Outcome'],['CA Policy Name']
+| evaluate pivot(['CA Outcome'], count(), ['CA Policy Name'])
