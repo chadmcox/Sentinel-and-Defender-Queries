@@ -1,1 +1,14 @@
-
+AADSignInEventsBeta 
+| where Timestamp >= ago(30d) and ErrorCode == 0
+| extend Day = startofday(Timestamp)
+| where NetworkLocationDetails !contains 'trustedNamedLocation'
+| summarize
+    ['Total Signin Count']=count(),
+    ['Trusted Deice']=countif(DeviceTrustType == "Hybrid Azure AD joined" or IsCompliant == 1) by Day
+| project Day,TrustedDevicePercentage=(todouble(['Trusted Deice']) * 100 / todouble(['Total Signin Count']))
+| render columnchart
+    with (
+    kind=unstacked,
+    xtitle="Day",
+    ytitle="Signin Count",
+    title="Non Trusted Trusted device signins per day")
