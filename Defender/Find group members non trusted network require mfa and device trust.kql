@@ -1,6 +1,6 @@
 let serviceaccounts = search in (ExposureGraphEdges) "change_me_to_group_name" | distinct SourceNodeName = tolower(SourceNodeName);
-let upns = IdentityLogonEvents
-| extend AccountName = tolower(AccountName)
+let upns = IdentityInfo
+| extend AccountName = tolower(AccountDisplayName)
 | where AccountName in (serviceaccounts) | distinct AccountUpn;
 AADSignInEventsBeta
 | where AccountUpn in (upns) and ErrorCode == 0
