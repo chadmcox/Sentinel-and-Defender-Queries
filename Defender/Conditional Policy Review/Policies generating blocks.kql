@@ -1,0 +1,11 @@
+AADSignInEventsBeta
+| where Timestamp > ago(30d) and ErrorCode == 53003
+| extend CA = parse_json(ConditionalAccessPolicies)
+| mv-expand bagexpansion=array CA
+| evaluate bag_unpack(CA)
+| extend
+    ['CA Outcome']=tostring(column_ifexists('result', "")),
+    ['CA Policy Name'] = column_ifexists('displayName', "")
+| where ['CA Outcome'] == "failure"
+| distinct AccountUpn,['CA Outcome'],['CA Policy Name']
+| evaluate pivot(['CA Outcome'], count(), ['CA Policy Name'])
