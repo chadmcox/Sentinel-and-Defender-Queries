@@ -1,1 +1,11 @@
-
+let excludeapps = pack_array("Windows Sign In","Microsoft Authentication Broker","Microsoft Account Controls V2","Microsoft Intune Company Portal","Microsoft Mobile Application Management");
+AADSignInEventsBeta
+| where Timestamp > ago(30d) and Application !in (excludeapps) and ErrorCode == 0
+| extend Day = startofday(Timestamp)
+| extend TrustedLocation = tostring(iff(NetworkLocationDetails contains 'trustedNamedLocation', 'trustedNamedLocation',''))
+| where TrustedLocation <> 'trustedNamedLocation'
+| summarize
+    ['Total Signin Count']=count(),
+    ['Total multiFactorAuthentication Count']=countif(AuthenticationRequirement == "multiFactorAuthentication"),
+    ['Total singleAuthentication Count']=countif(AuthenticationRequirement == "singleFactorAuthentication") by Day  
+| project Day,MFAPercentage=(todouble(['Total multiFactorAuthentication Count']) * 100 / todouble(['Total Signin Count']))
