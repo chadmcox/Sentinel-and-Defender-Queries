@@ -1,0 +1,8 @@
+AADSignInEventsBeta
+| where Timestamp > ago(1d) and ErrorCode == 0 and NetworkLocationDetails !contains 'trustedNamedLocation' and IsGuestUser <> 1
+| where isnotnull(ConditionalAccessPolicies)
+| mv-apply ca=todynamic(ConditionalAccessPolicies) on (
+    summarize condition1 = countif(ca.result in ("success","failure"))
+)
+| where condition1 == 0
+| distinct Day = startofday(Timestamp), AccountUpn, Application, AuthenticationRequirement, IsCompliant, IsManaged, IsGuestUser, IsExternalUser
