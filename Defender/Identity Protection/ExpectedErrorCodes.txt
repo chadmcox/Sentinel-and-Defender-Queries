@@ -1,0 +1,7 @@
+50074 - Strong Authentication is required.
+50142 - Password change is required due to a conditional access policy.
+53003 - Access has been blocked by Conditional Access policies. The access policy does not allow token issuance.
+53004 - Cannot configure multi-factor authentication methods due to suspicious activity.
+530031 - A classic conditional access policy, or a policy from Azure AD Identity Protection, prevented this resource from being accessed. View the Conditional Access information for this request in the sign-in logs for more details about the policy applied here.
+530032 - User blocked due to risk on home tenant.
+70046 - The session has expired or is invalid due to re-authentication checks by conditional access.
