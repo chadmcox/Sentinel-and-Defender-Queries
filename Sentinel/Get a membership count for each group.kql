@@ -1,0 +1,6 @@
+IdentityInfo 
+| where TimeGenerated >= ago(30d)
+| project AccountUPN, GroupMembership
+| mv-expand GroupMembership
+| distinct AccountUPN, tostring(GroupMembership)
+| summarize totalcount = count() by tostring(GroupMembership)
