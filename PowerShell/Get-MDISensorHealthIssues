@@ -1,0 +1,5 @@
+connect-mggraph SecurityIdentitiesSensors.Read.All
+
+#graph reference: https://learn.microsoft.com/en-us/graph/api/security-identitycontainer-list-sensors?view=graph-rest-beta&tabs=http
+
+Get-MgBetaSecurityIdentitySensor -All | where {$_.OpenHealthIssuesCount -gt 0}
