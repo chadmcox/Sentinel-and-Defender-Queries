@@ -21,7 +21,7 @@
             "HTTP": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "https://graph.microsoft.com/beta/security/identities/sensors?$filter=openHealthIssuesCount gt 0&$select=displayName,sensorType,version,deploymentStatus,domainName,healthStatus,openHealthIssuesCount,serviceStatus",
+                    "uri": "https://graph.microsoft.com/beta/security/identities/sensors?$filter=openHealthIssuesCount%20gt%200&$select=displayName,sensorType,version,deploymentStatus,domainName,healthStatus,openHealthIssuesCount,serviceStatus",
                     "method": "GET",
                     "authentication": {
                         "type": "ManagedServiceIdentity",
