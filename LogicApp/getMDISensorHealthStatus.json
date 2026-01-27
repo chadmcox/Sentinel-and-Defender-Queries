@@ -161,21 +161,21 @@
                 }
             },
             "Post_to_Teams_Webhook": {
-                "runAfter": {
-                    "Create_HTML_table": [
-                        "Succeeded"
-                    ]
-                },
                 "type": "Http",
                 "inputs": {
-                    "uri": "<Insert webhook url here>",
+                    "uri": "<add webhook url"",
                     "method": "POST",
                     "headers": {
                         "Content-Type": "application/json"
                     },
                     "body": {
-                        "text": "@{outputs('Create_HTML_table')?['body']}"
+                        "text": "<h2>Daily Identity Sensor Health</h2>         @{outputs('Create_HTML_table')?['body']}"
                     }
+                },
+                "runAfter": {
+                    "Create_HTML_table": [
+                        "Succeeded"
+                    ]
                 }
             }
         },
