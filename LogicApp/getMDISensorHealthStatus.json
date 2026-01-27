@@ -163,7 +163,7 @@
             "Post_to_Teams_Webhook": {
                 "type": "Http",
                 "inputs": {
-                    "uri": "<team webhook uri",
+                    "uri": "<team webhook uri>",
                     "method": "POST",
                     "headers": {
                         "Content-Type": "application/json"
