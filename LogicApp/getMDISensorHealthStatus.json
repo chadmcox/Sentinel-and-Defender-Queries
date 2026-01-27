@@ -4,6 +4,7 @@
         "contentVersion": "1.0.0.0",
         "triggers": {
             "Recurrence": {
+                "type": "Recurrence",
                 "recurrence": {
                     "interval": 1,
                     "frequency": "Day",
@@ -13,27 +14,11 @@
                             9
                         ]
                     }
-                },
-                "evaluatedRecurrence": {
-                    "interval": 1,
-                    "frequency": "Day",
-                    "timeZone": "US Mountain Standard Time",
-                    "schedule": {
-                        "hours": [
-                            9
-                        ]
-                    }
-                },
-                "type": "Recurrence"
+                }
             }
         },
         "actions": {
             "HTTP": {
-                "runAfter": {
-                    "Initialize_variables_3": [
-                        "Succeeded"
-                    ]
-                },
                 "type": "Http",
                 "inputs": {
                     "uri": "https://graph.microsoft.com/beta/security/identities/sensors?$select=displayName,sensorType,version,deploymentStatus,domainName,healthStatus,openHealthIssuesCount,serviceStatus",
@@ -43,6 +28,11 @@
                         "audience": "https://graph.microsoft.com"
                     }
                 },
+                "runAfter": {
+                    "Initialize_variables_3": [
+                        "Succeeded"
+                    ]
+                },
                 "runtimeConfiguration": {
                     "contentTransfer": {
                         "transferMode": "Chunked"
@@ -50,7 +40,6 @@
                 }
             },
             "Initialize_variables_3": {
-                "runAfter": {},
                 "type": "InitializeVariable",
                 "inputs": {
                     "variables": [
@@ -68,14 +57,10 @@
                             "type": "string"
                         }
                     ]
-                }
+                },
+                "runAfter": {}
             },
             "Parse_JSON": {
-                "runAfter": {
-                    "Compose": [
-                        "Succeeded"
-                    ]
-                },
                 "type": "ParseJson",
                 "inputs": {
                     "content": "@outputs('Compose')",
@@ -129,9 +114,15 @@
                             }
                         }
                     }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
                 }
             },
             "For_each": {
+                "type": "Foreach",
                 "foreach": "@body('Parse_JSON')?['value']",
                 "actions": {
                     "Append_to_array_variable": {
@@ -146,28 +137,45 @@
                     "Parse_JSON": [
                         "Succeeded"
                     ]
-                },
-                "type": "Foreach"
+                }
             },
             "Compose": {
+                "type": "Compose",
+                "inputs": "@body('HTTP')",
                 "runAfter": {
                     "HTTP": [
                         "Succeeded"
                     ]
-                },
-                "type": "Compose",
-                "inputs": "@body('HTTP')"
+                }
             },
             "Create_HTML_table": {
-                "runAfter": {
-                    "For_each": [
-                        "Succeeded"
-                    ]
-                },
                 "type": "Table",
                 "inputs": {
                     "from": "@variables('array_results')",
                     "format": "HTML"
+                },
+                "runAfter": {
+                    "For_each": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Post_to_Teams_Webhook": {
+                "runAfter": {
+                    "Create_HTML_table": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http",
+                "inputs": {
+                    "uri": "<Insert webhook url here>",
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": {
+                        "text": "@{outputs('Create_HTML_table')?['body']}"
+                    }
                 }
             }
         },
