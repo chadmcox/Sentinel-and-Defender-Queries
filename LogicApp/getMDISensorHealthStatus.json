@@ -1,0 +1,177 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "Recurrence": {
+                "recurrence": {
+                    "interval": 1,
+                    "frequency": "Day",
+                    "timeZone": "US Mountain Standard Time",
+                    "schedule": {
+                        "hours": [
+                            9
+                        ]
+                    }
+                },
+                "evaluatedRecurrence": {
+                    "interval": 1,
+                    "frequency": "Day",
+                    "timeZone": "US Mountain Standard Time",
+                    "schedule": {
+                        "hours": [
+                            9
+                        ]
+                    }
+                },
+                "type": "Recurrence"
+            }
+        },
+        "actions": {
+            "HTTP": {
+                "runAfter": {
+                    "Initialize_variables_3": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://graph.microsoft.com/beta/security/identities/sensors?$select=displayName,sensorType,version,deploymentStatus,domainName,healthStatus,openHealthIssuesCount,serviceStatus",
+                    "method": "GET",
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://graph.microsoft.com"
+                    }
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Initialize_variables_3": {
+                "runAfter": {},
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "bool_loopDone",
+                            "type": "boolean",
+                            "value": false
+                        },
+                        {
+                            "name": "array_results",
+                            "type": "array"
+                        },
+                        {
+                            "name": "str_nextLink",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Compose')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "@@odata.context": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "displayName": {
+                                            "type": "string"
+                                        },
+                                        "sensorType": {
+                                            "type": "string"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "deploymentStatus": {
+                                            "type": "string"
+                                        },
+                                        "domainName": {
+                                            "type": "string"
+                                        },
+                                        "healthStatus": {
+                                            "type": "string"
+                                        },
+                                        "openHealthIssuesCount": {
+                                            "type": "integer"
+                                        },
+                                        "serviceStatus": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "displayName",
+                                        "sensorType",
+                                        "version",
+                                        "deploymentStatus",
+                                        "domainName",
+                                        "healthStatus",
+                                        "openHealthIssuesCount",
+                                        "serviceStatus"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "For_each": {
+                "foreach": "@body('Parse_JSON')?['value']",
+                "actions": {
+                    "Append_to_array_variable": {
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                            "name": "array_results",
+                            "value": "@items('For_each')"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Foreach"
+            },
+            "Compose": {
+                "runAfter": {
+                    "HTTP": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Compose",
+                "inputs": "@body('HTTP')"
+            },
+            "Create_HTML_table": {
+                "runAfter": {
+                    "For_each": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Table",
+                "inputs": {
+                    "from": "@variables('array_results')",
+                    "format": "HTML"
+                }
+            }
+        },
+        "outputs": {}
+    },
+    "kind": "stateful"
+}
