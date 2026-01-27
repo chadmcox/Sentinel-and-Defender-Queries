@@ -1,0 +1,101 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "Recurrence": {
+                "type": "Recurrence",
+                "recurrence": {
+                    "interval": 1,
+                    "frequency": "Day",
+                    "timeZone": "US Mountain Standard Time",
+                    "schedule": {
+                        "hours": [
+                            11
+                        ]
+                    }
+                }
+            }
+        },
+        "actions": {
+            "HTTP_RunHuntingQuery": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://graph.microsoft.com/beta/security/runHuntingQuery",
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": {
+                        "Query": "let groups = pack_array(\"Account Operators\",\"Administrators\",\"Backup Operators\",\"Domain Admins\",\"Domain Controllers\",\"Enterprise Admins\",\"Print Operators\",\"Read-only Domain Controllers\",\"Replicator\",\"Schema Admins\",\"Server Operators\",\"Cert Publishers\",\"Certificate Service DCOM Access\",\"Cryptographic Operators\",\"Distributed COM Users\",\"DnsAdmins\",\"Enterprise Key Admins\",\"Key Admins\"); IdentityDirectoryEvents | where Timestamp >= ago(1d) | where ActionType == \"Group Membership changed\" | extend AdditionalFields = parse_json(AdditionalFields) | extend FromGroup = AdditionalFields.[\"FROM.GROUP\"] | extend ToGroup = AdditionalFields.[\"TO.GROUP\"] | where ToGroup in (groups) or FromGroup in (groups) | extend TargetObject = iff(isnull(AdditionalFields.[\"TARGET_OBJECT.USER\"]), AdditionalFields.[\"TARGET_OBJECT.GROUP\"], AdditionalFields.[\"TARGET_OBJECT.USER\"]) | extend TargetObject = iff(isnull(TargetObject), AdditionalFields.[\"TARGET_OBJECT.DEVICE\"], TargetObject) | project-away AdditionalFields | project Timestamp, ActionType, Application, FromGroup, ToGroup, TargetObject"
+                    },
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "https://graph.microsoft.com"
+                    }
+                },
+                "runAfter": {},
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Only_When_Results": {
+                "type": "If",
+                "expression": "@greater(length(body('HTTP_RunHuntingQuery')?['results']), 0)",
+                "actions": {
+                    "Create_HTML_table": {
+                        "type": "Table",
+                        "inputs": {
+                            "from": "@body('HTTP_RunHuntingQuery')?['results']",
+                            "format": "HTML"
+                        }
+                    },
+                    "Post_to_Teams_Webhook": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "https://m365x41223001.webhook.office.com/webhookb2/625d2d07-caaa-4aa0-95e0-8bd6b62895da@0e10892f-15ca-4d02-b283-e7369b3a2020/IncomingWebhook/76517b3face94a2f89f2455101ce7bd0/5481de6c-a562-446e-9699-f2ccb974f5da/V2Q5Ekfn0ygbIv48N7VL-YJDQG6N1WfEHgK6LSQwPWRrk1",
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "body": {
+                                "text": "@{concat('<h2>Changes to Sensitive AD Groups</h2><p>Window: last 24h</p>', outputs('Create_HTML_table')?['body'])}"
+                            }
+                        },
+                        "runAfter": {
+                            "Create_HTML_table": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Post_Clear_Webhook": {
+                            "type": "Http",
+                            "inputs": {
+                                "uri": "https://m365x41223001.webhook.office.com/webhookb2/625d2d07-caaa-4aa0-95e0-8bd6b62895da@0e10892f-15ca-4d02-b283-e7369b3a2020/IncomingWebhook/76517b3face94a2f89f2455101ce7bd0/5481de6c-a562-446e-9699-f2ccb974f5da/V2Q5Ekfn0ygbIv48N7VL-YJDQG6N1WfEHgK6LSQwPWRrk1",
+                                "method": "POST",
+                                "headers": {
+                                    "Content-Type": "application/json"
+                                },
+                                "body": {
+                                    "text": "✅ <b>Changes to Sensitive AD Groups</b>: No results in the last 24 hours."
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "HTTP_RunHuntingQuery": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "outputs": {}
+    },
+    "kind": "stateful"
+}
