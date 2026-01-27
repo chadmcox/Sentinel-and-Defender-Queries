@@ -76,7 +76,7 @@
                         "Post_Clear_Webhook": {
                             "type": "Http",
                             "inputs": {
-                                "uri": "https://m365x41223001.webhook.office.com/webhookb2/625d2d07-caaa-4aa0-95e0-8bd6b62895da@0e10892f-15ca-4d02-b283-e7369b3a2020/IncomingWebhook/76517b3face94a2f89f2455101ce7bd0/5481de6c-a562-446e-9699-f2ccb974f5da/V2Q5Ekfn0ygbIv48N7VL-YJDQG6N1WfEHgK6LSQwPWRrk1",
+                                "uri": "<webhuuk uri>",
                                 "method": "POST",
                                 "headers": {
                                     "Content-Type": "application/json"
