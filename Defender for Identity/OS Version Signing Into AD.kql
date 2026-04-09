@@ -3,5 +3,6 @@ IdentityLogonEvents
 | extend SourceComputerSid = tostring(parse_json(AdditionalFields.SourceComputerSid))
 | extend SourceComputerObjectGuid = tostring(parse_json(AdditionalFields.SourceComputerObjectGuid))
 | extend SourceComputerOperatingSystem = tostring(parse_json(AdditionalFields.SourceComputerOperatingSystem))
-| distinct SourceComputerSid, SourceComputerObjectGuid, SourceComputerOperatingSystem
-| summarize count() by SourceComputerOperatingSystem
+| extend EncryptionType = tostring(parse_json(AdditionalFields.EncryptionType))
+| distinct SourceComputerSid, SourceComputerObjectGuid, SourceComputerOperatingSystem, AccountDomain, AccountName, EncryptionType
+| summarize count() by SourceComputerOperatingSystem, EncryptionType
