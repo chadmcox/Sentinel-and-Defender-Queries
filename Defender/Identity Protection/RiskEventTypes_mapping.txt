@@ -5,6 +5,6 @@
 210 = anomalousToken
 208 = Unknown
 105 = Unknown
-205 = Unknown
+205 = Malicious IP Address
 209 = Unkown
 402 = Unknown
