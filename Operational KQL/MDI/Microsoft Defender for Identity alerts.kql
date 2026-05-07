@@ -1,0 +1,14 @@
+//https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
+let TimeRange = ago(1d);
+AlertInfo
+| where Timestamp >= TimeRange
+| where DetectionSource has "Defender for Identity"
+| project
+    Timestamp,
+    AlertId,
+    Title,
+    Severity,
+    Category,
+    ServiceSource,
+    DetectionSource
+| sort by Timestamp desc
