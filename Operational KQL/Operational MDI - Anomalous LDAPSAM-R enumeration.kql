@@ -1,0 +1,7 @@
+let TimeRange = 1d;
+IdentityQueryEvents
+| where Timestamp >= ago(TimeRange)
+| where ActionType in ("SamR query", "Ldap query")
+| summarize QueryCount = count() by DeviceName, AccountUpn, bin(Timestamp, 1h)
+| where QueryCount > 500
+| order by QueryCount desc
