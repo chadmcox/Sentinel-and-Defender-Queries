@@ -1,0 +1,13 @@
+let TimeRange = 7d;
+IdentityQueryEvents
+| where Timestamp >= ago(TimeRange)
+| where isnotempty(AccountUpn)
+| summarize 
+    TotalQueries = count(), 
+    DistinctTargetResources = dcount(TargetDeviceName), 
+    DistinctIPs = dcount(IPAddress),
+    ActionTypes = make_set(ActionType), // Para saber qué tipo de consultas hacen
+    IPList = make_set(IPAddress, 5) // Muestra hasta 5 IPs de origen
+    by AccountUpn
+| extend QueryIntensity = TotalQueries / DistinctIPs
+| order by TotalQueries desc
