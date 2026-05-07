@@ -1,0 +1,13 @@
+IdentityDirectoryEvents
+| where Timestamp > ago(24h)
+| where ActionType has "Health" or ActionType has "Sensor" or ActionType has "Status"
+| extend State = tostring(AdditionalFields.State), 
+         Message = tostring(AdditionalFields.Message),
+         SensorName = DeviceName
+| summarize 
+    LastUpdate = max(Timestamp), 
+    TotalAlerts = count(), 
+    CurrentState = make_set(State),
+    ErrorDetails = make_set(Message) 
+    by SensorName, ActionType
+| sort by LastUpdate desc
