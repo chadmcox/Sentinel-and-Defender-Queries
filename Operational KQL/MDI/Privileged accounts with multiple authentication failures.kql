@@ -1,0 +1,20 @@
+//https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
+let PrivilegedAccounts = IdentityInfo
+| where TimeGenerated > ago(14d)
+| where isnotempty(AssignedRoles)
+| summarize arg_max(TimeGenerated, *) by AccountUpn
+| project AccountUpn, AssignedRoles;
+IdentityLogonEvents
+| where Timestamp > ago(24h)
+| where ActionType == "LogonFailed"
+| where FailureReason !in ("UserNotFound", "UnknownUser")
+| join kind=inner PrivilegedAccounts on $left.AccountUpn == $right.AccountUpn
+| summarize 
+    FailureCount = count(), 
+    FailureReasons = make_set(FailureReason), 
+    UniqueIPs = dcount(IPAddress), 
+    IPList = make_set(IPAddress),
+    AppList = make_set(Application)
+    by TargetDeviceName, Roles = tostring(AssignedRoles) 
+| where FailureCount >= 5 
+| sort by FailureCount desc
