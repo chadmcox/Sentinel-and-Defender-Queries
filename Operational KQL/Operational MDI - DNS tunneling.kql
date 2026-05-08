@@ -1,0 +1,9 @@
+//https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
+let TimeRange = 1d;
+DeviceNetworkEvents
+| where Timestamp >= ago(TimeRange)
+| where RemotePort == 53
+| summarize DNSQueries = count(), DistinctDomains = dcount(RemoteUrl) 
+    by DeviceName, InitiatingProcessAccountName
+| where DNSQueries > 1000 or DistinctDomains > 500
+| order by DNSQueries desc
