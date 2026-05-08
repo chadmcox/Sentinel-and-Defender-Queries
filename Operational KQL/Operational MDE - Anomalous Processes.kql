@@ -1,0 +1,7 @@
+DeviceProcessEvents
+| where Timestamp >= ago(7d)
+| where FileName in~ ("powershell.exe", "cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe", "regsvr32.exe", "rundll32.exe")
+| where ProcessCommandLine has_any ("Invoke-Expression", "IEX", "DownloadString", "DownloadFile", "EncodedCommand", "-enc", "bypass", "hidden")
+| summarize ExecutionCount = count(), Devices = dcount(DeviceName) by FileName, ProcessCommandLine
+| where ExecutionCount <= 3
+| order by ExecutionCount asc
