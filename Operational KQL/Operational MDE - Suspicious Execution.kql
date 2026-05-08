@@ -1,0 +1,12 @@
+DeviceProcessEvents
+| where Timestamp >= ago(7d)
+| where FileName in~ (
+    "powershell.exe","cmd.exe","mshta.exe","rundll32.exe",
+    "regsvr32.exe","wscript.exe","cscript.exe"
+)
+| where ProcessCommandLine has_any (
+    "-enc","DownloadString","IEX","Invoke-WebRequest",
+    "FromBase64String","http","https"
+)
+| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessAccountName
+| order by Timestamp desc
