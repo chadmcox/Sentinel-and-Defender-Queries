@@ -1,0 +1,6 @@
+let TimeRange = 7d;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| where ActionType in ("Consent to application","Grant consent")
+| summarize Consents=count(), Users=dcount(AccountId) by Application, ApplicationId
+| top 20 by Consents desc
