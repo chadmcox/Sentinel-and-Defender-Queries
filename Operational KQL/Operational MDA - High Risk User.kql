@@ -1,0 +1,4 @@
+EntraIdSignInEvents 
+| where Timestamp > ago(7d) 
+| where RiskLevelAggregated in (100) and RiskState == 2
+| project AccountUpn, AccountDisplayName, ConditionalAccessStatus, AuthenticationRequirement, ErrorCode, RiskEventTypes, RiskLevelAggregated, RiskLevelDuringSignIn
