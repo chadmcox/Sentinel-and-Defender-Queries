@@ -1,0 +1,11 @@
+let Lookback = 7d;
+let Baseline = 60d;
+let recent = CloudAppEvents
+| where Timestamp >= ago(Lookback)
+| summarize FirstSeen=min(Timestamp), Events=count() by Application;
+let historical = CloudAppEvents
+| where Timestamp between (ago(Baseline) .. ago(Lookback))
+| summarize PrevEvents=count() by Application;
+recent
+| join kind=leftanti historical on Application
+| order by Events desc
