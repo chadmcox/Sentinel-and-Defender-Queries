@@ -1,0 +1,9 @@
+EmailAttachmentInfo
+| where isnotempty(ThreatTypes)
+| project
+    Timestamp,
+    NetworkMessageId,
+    FileName,
+    ThreatTypes,
+    ThreatNames,
+    DetectionMethods
