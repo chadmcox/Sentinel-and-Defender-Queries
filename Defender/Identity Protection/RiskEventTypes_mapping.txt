@@ -3,9 +3,13 @@
 401 = mcasImpossibleTravel
 101 = anonymizedIPAddress
 210 = anomalousToken
+107 = Maybe anomalousToken
 208 = Unknown
 105 = Unknown
+109 = Maybe suspiciousAuthAppApproval
 205 = Malicious IP Address
-208 = Password Spray
+103 = Malicious IP Address
+208 = Password Spray?
+108 = Password Spray?
 209 = Unkown
 402 = Unknown
