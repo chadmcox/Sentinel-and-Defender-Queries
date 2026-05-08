@@ -1,0 +1,6 @@
+DeviceNetworkEvents
+| where Timestamp >= ago(7d)
+| where RemoteIPType == "Public"
+| where InitiatingProcessFileName in~ ("powershell.exe","cmd.exe","mshta.exe","rundll32.exe")
+| project Timestamp, DeviceName, InitiatingProcessFileName, RemoteIP, RemotePort
+| order by Timestamp desc
