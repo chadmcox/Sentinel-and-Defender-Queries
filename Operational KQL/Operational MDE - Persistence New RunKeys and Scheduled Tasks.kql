@@ -1,0 +1,6 @@
+DeviceRegistryEvents
+| where Timestamp >= ago(7d)
+| where ActionType == "RegistryValueSet"
+| where RegistryKey has_any (@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", @"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce")
+| project Timestamp, DeviceName, InitiatingProcessFileName, RegistryKey, RegistryValueName, RegistryValueData
+| order by Timestamp desc
