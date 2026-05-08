@@ -1,0 +1,10 @@
+let TimeRange = 1d;
+let Window = 2h;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| where isnotempty(CountryCode)
+| summarize Countries=make_set(CountryCode, 10), MinTime=min(Timestamp), MaxTime=max(Timestamp)
+  by AccountId, AccountDisplayName, bin(Timestamp, Window)
+| where array_length(Countries) >= 2
+| project AccountDisplayName, Countries, MinTime, MaxTime
+| order by MaxTime desc
