@@ -1,0 +1,6 @@
+let TimeRange = 7d;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| where IsAdminOperation == true
+| summarize Events=count(), IPs=make_set(IPAddress, 20) by Application, ActionType, AccountDisplayName
+| order by Events desc
