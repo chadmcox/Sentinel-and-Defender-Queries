@@ -1,0 +1,8 @@
+let TimeRange = 14d;
+let ShareThreshold = 20;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| where ActionType has_any ("SharingSet","SharingInvitationCreated","Anonymous")
+| summarize Shares=count(), Apps=dcount(Application) by AccountDisplayName, AccountObjectId
+| where Shares > ShareThreshold
+| order by Shares desc
