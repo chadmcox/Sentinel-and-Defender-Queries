@@ -1,0 +1,26 @@
+EmailEvents
+| where Timestamp >= ago(7d)
+| where DeliveryAction == "Delivered"
+| where ThreatTypes has_any ("Malware", "Phish", "Spam")
+| project
+    EventTimestamp = Timestamp,
+    NetworkMessageId,
+    SenderFromAddress,
+    RecipientEmailAddress,
+    Subject,
+    ThreatTypes,
+    DetectionMethods,
+    AuthenticationDetails,
+    ConfidenceLevel,
+    DeliveryLocation,
+    EmailClusterId,
+    ReportId
+| join kind=leftouter (
+    EmailPostDeliveryEvents
+    | where Timestamp >= ago(7d)
+    | project
+        NetworkMessageId,
+        PostDeliveryTimestamp = Timestamp,
+        ActionType,
+        ActionResult
+) on NetworkMessageId
