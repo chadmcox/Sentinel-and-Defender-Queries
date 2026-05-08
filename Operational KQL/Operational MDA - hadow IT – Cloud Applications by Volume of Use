@@ -1,0 +1,4 @@
+CloudAppEvents
+| where Timestamp >= ago(24h)
+| summarize Events=count(), Users=dcount(AccountId) by Application
+| top 20 by Events desc
