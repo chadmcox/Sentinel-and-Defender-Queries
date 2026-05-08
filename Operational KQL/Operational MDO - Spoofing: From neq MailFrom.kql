@@ -1,0 +1,7 @@
+//https://github.com/watchdogcode/gol2026/blob/main/MDO/Paquete%20MDO%20KQL%20Advance%20Hunting.md
+EmailEvents
+| where Timestamp >= ago(7d)
+| where isempty(SenderFromDomain) == false and isempty(SenderMailFromDomain) == false
+| where SenderFromDomain <> SenderMailFromDomain
+| project Timestamp, NetworkMessageId, SenderFromAddress, SenderFromDomain, SenderMailFromAddress, SenderMailFromDomain, RecipientEmailAddress, Subject, DeliveryAction, ThreatTypes
+| order by Timestamp desc
