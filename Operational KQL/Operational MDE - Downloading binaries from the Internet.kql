@@ -1,0 +1,5 @@
+DeviceProcessEvents
+| where Timestamp >= ago(7d)
+| where ProcessCommandLine has_any ("http://","https://")
+| where FileName in~ ("powershell.exe","curl.exe","wget.exe","bitsadmin.exe")
+| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessAccountName
