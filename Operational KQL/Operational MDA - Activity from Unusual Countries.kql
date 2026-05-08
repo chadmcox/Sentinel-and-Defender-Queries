@@ -1,0 +1,15 @@
+let TimeRange = 7d;
+let Baseline = 60d;
+let known = CloudAppEvents
+| where Timestamp between (ago(Baseline) .. ago(TimeRange))
+| where isnotempty(CountryCode)
+| summarize KnownCountries=make_set(CountryCode, 200) by AccountId;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| where isnotempty(CountryCode)
+| summarize RecentCountries=make_set(CountryCode, 50), Events=count() by AccountId, AccountDisplayName
+| join kind=leftouter known on AccountId
+| extend NewCountries = set_difference(RecentCountries, KnownCountries)
+| where array_length(NewCountries) > 0
+| project AccountDisplayName, NewCountries, Events
+| order by array_length(NewCountries) desc
