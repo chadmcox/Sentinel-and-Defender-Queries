@@ -1,0 +1,5 @@
+CloudAppEvents
+| where Timestamp >= ago(24h)
+| where ActionType in ("Consent to application","Grant consent")
+| summarize Consents=count(), Users=dcount(AccountId) by Application, ApplicationId
+| top 20 by Consents desc
