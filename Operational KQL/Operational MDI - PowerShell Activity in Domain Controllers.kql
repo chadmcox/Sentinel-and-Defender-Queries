@@ -1,0 +1,7 @@
+//https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
+let TimeRange = 7d;
+IdentityDirectoryEvents
+| where Timestamp >= ago(TimeRange)
+| where ActionType has "PowerShell"
+| project Timestamp, AccountUpn, ActionType, AdditionalFields, DeviceName, DestinationDeviceName
+| order by Timestamp desc
