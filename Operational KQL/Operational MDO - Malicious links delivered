@@ -1,0 +1,9 @@
+EmailEvents
+| where Timestamp >= ago(7d)
+| where ThreatTypes has_any ("Phish","Malware")
+| where DeliveryAction == "Delivered"
+| join kind=inner (
+    EmailUrlInfo
+    | project NetworkMessageId, Url
+) on NetworkMessageId
+| project Timestamp, SenderFromAddress, RecipientEmailAddress, Url, ThreatTypes
