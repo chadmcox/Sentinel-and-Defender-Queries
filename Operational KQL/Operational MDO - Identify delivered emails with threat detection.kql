@@ -1,0 +1,14 @@
+EmailEvents
+| where DeliveryAction == "Delivered"
+| where ThreatTypes != ""
+| project
+    Timestamp,
+    NetworkMessageId,
+    SenderFromAddress,
+    RecipientEmailAddress,
+    Subject,
+    ThreatTypes,
+    DetectionMethods,
+    ConfidenceLevel,
+    DeliveryLocation
+| order by Timestamp desc
