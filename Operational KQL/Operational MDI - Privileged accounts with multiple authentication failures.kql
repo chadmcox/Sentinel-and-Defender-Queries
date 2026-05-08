@@ -1,8 +1,8 @@
 //https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
 let PrivilegedAccounts = IdentityInfo
-| where TimeGenerated > ago(14d)
+| where Timestamp > ago(14d)
 | where isnotempty(AssignedRoles)
-| summarize arg_max(TimeGenerated, *) by AccountUpn
+| summarize arg_max(Timestamp, *) by AccountUpn
 | project AccountUpn, AssignedRoles;
 IdentityLogonEvents
 | where Timestamp > ago(24h)
