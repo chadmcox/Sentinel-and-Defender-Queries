@@ -1,0 +1,6 @@
+DeviceInfo
+| where Timestamp >= ago(24h)
+| summarize arg_max(Timestamp, *) by DeviceId
+| where OnboardingStatus != "Onboarded" or SensorHealthState != "Active"
+| project Timestamp, DeviceName, OSPlatform, OnboardingStatus, SensorHealthState, ExposureLevel
+| order by Timestamp desc
