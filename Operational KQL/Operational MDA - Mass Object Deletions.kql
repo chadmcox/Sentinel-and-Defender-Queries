@@ -1,0 +1,8 @@
+let TimeRange = 7d;
+let DeletionThreshold = 10;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| where ActionType has_any ("Delete","Remove","Purge")
+| summarize Deletions=count(), Users=dcount(AccountId) by Application, ActionType
+| where Deletions > DeletionThreshold
+| order by Deletions desc
