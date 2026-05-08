@@ -1,0 +1,5 @@
+let TimeRange = 7d;
+CloudAppEvents
+| where Timestamp >= ago(TimeRange)
+| summarize Events=count(), Users=dcount(AccountId) by Application
+| top 25 by Events desc
