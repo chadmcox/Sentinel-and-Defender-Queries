@@ -6,5 +6,6 @@
 208 = Unknown
 105 = Unknown
 205 = Malicious IP Address
+208 = Password Spray
 209 = Unkown
 402 = Unknown
