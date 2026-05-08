@@ -1,0 +1,5 @@
+DeviceProcessEvents
+| where Timestamp >= ago(7d)
+| where FolderPath has_any ("\\Users\\Public\\","\\AppData\\Local\\Temp\\","\\ProgramData\\")
+| where FileName endswith ".exe"
+| project Timestamp, DeviceName, FileName, FolderPath, ProcessCommandLine
