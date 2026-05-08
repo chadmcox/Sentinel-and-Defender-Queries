@@ -1,0 +1,5 @@
+DeviceEvents
+| where Timestamp >= ago(14d)
+| where ActionType == "UserAccountCreated"
+| project Timestamp, DeviceName, AccountName, InitiatingProcessAccountName
+| order by Timestamp desc
