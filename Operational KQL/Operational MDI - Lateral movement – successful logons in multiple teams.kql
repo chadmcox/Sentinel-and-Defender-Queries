@@ -1,1 +1,11 @@
-
+//https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
+let Lookback = 1d;
+let Window = 1h;
+let MinDevices = 6;
+IdentityLogonEvents
+| where Timestamp >= ago(Lookback)
+| where ActionType in ("LogonSuccess", "LogonAttempted")
+| summarize Devices = dcount(DeviceName), DeviceList = make_set(DeviceName, 25), TotalLogons = count() 
+    by AccountUpn, AccountName, AccountDomain, bin(Timestamp, Window)
+| where Devices >= MinDevices
+| order by Devices desc
