@@ -1,0 +1,7 @@
+AlertInfo
+| where Timestamp >= ago(24h)
+| where ServiceSource has "Endpoint"
+| join kind=inner (AlertEvidence | where Timestamp >= ago(24h) | where EntityType == "Machine") on AlertId
+| summarize AlertCount = count(), Severities = make_set(Severity) by DeviceName
+| where AlertCount >= 3
+| order by AlertCount desc
