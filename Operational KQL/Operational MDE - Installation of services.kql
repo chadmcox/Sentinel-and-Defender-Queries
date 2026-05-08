@@ -1,0 +1,6 @@
+DeviceEvents
+| where Timestamp >= ago(14d)
+| where ActionType == "ServiceInstalled"
+| extend ServiceName = tostring(parse_json(AdditionalFields).ServiceName)
+| project Timestamp, DeviceName, ServiceName, FolderPath, InitiatingProcessAccountName
+| order by Timestamp desc
