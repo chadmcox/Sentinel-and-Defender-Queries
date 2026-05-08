@@ -1,0 +1,5 @@
+DeviceEvents
+| where Timestamp >= ago(7d)
+| where ActionType == "ScheduledTaskCreated"
+| project Timestamp, DeviceName, InitiatingProcessFileName, AdditionalFields
+| order by Timestamp desc
