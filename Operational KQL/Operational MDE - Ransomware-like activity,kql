@@ -1,0 +1,6 @@
+DeviceFileEvents
+| where Timestamp >= ago(1d)
+| where ActionType == "FileRenamed"
+| summarize FileCount = count() by DeviceName, InitiatingProcessFileName
+| where FileCount > 100
+| order by FileCount desc
