@@ -1,0 +1,5 @@
+EmailEvents
+| where SenderFromDomain == RecipientDomain
+| where isempty(AuthenticationDetails)
+| where EmailDirection == "Inbound"
+| project Timestamp, NetworkMessageId, SenderFromAddress, RecipientEmailAddress, SenderIPv4, Subject
