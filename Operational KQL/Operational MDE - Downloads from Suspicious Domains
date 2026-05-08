@@ -1,0 +1,9 @@
+DeviceNetworkEvents
+| where Timestamp >= ago(7d)
+| where ActionType == "ConnectionSuccess"
+| extend Domain = tostring(parse_url(RemoteUrl).Host)
+| where not(Domain has_any ("microsoft.com","windows.com","office.com","azure.com","windowsupdate.com"))
+| summarize ConnectionCount = count(), Devices = dcount(DeviceName) by RemoteUrl
+| where ConnectionCount <= 5
+| order by ConnectionCount asc
+| take 50
