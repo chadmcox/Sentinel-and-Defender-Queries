@@ -1,0 +1,9 @@
+//https://github.com/watchdogcode/gol2026/blob/main/MDI/Paquete%20MDI%20KQL%20Advance%20Hunting.md
+IdentityDirectoryEvents
+| where Timestamp >= ago(7d)
+| where ActionType contains "Account"
+| extend OldSamAccount = tostring(parse_json(AdditionalFields).OldValue)
+| extend NewSamAccount = tostring(parse_json(AdditionalFields).NewValue)
+| where OldSamAccount != NewSamAccount and NewSamAccount endswith "$"
+| project Timestamp, AccountUpn, TargetAccountUpn, OldSamAccount, NewSamAccount, DeviceName
+| order by Timestamp desc
