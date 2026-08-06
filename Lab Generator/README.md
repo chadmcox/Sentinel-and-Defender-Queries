@@ -40,3 +40,32 @@ Group noise now discovers groups from the live OU tree under `OU=Groups,DC=conto
 - `12-Honeypot-Noise.ps1` updates the honeypot account description to create lab-local activity.
 - `13-Simple-Bind-Test.ps1` performs a lightweight LDAP bind test against a supplied identity and password.
 - `14-Combined-Demo.ps1` runs a one-shot lab sequence using BG1/BG2/BG3, the honeypot account, and LDAP bind checks.
+
+### Create schedule task
+```powershell
+$TaskName = "MDI-Lab-Random-Demo"
+$ScriptPath = "C:\Lab\mdi_lab_scripts_v4\14-Combined-Demo.ps1"
+$User = "contoso\mdi-lab-svc"
+
+$action = New-ScheduledTaskAction `
+    -Execute "powershell.exe" `
+    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`"" `
+    -WorkingDirectory "C:\Scripts\mdi_lab_scripts_v4"
+
+$trigger = New-ScheduledTaskTrigger `
+    -Daily `
+    -At "06:00AM" `
+    -RandomDelay (New-TimeSpan -Minutes 120)
+
+$principal = New-ScheduledTaskPrincipal `
+    -UserId $User `
+    -RunLevel Highest
+
+Register-ScheduledTask `
+    -TaskName $TaskName `
+    -Action $action `
+    -Trigger $trigger `
+    -Principal $principal `
+    -Description "Runs the MDI lab demo script under the dedicated lab service account" `
+    -Force
+```
